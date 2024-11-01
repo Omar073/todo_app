@@ -20,7 +20,8 @@ class _MainTasksPageState extends State<MainTasksPage> {
     super.initState();
     _scrollController = ScrollController();
     _scrollController.addListener(_onScroll);
-    Future.microtask(() => Provider.of<TodoProvider>(context, listen: false).fetchTodos());
+    Future.microtask(
+        () => Provider.of<TodoProvider>(context, listen: false).fetchTodos());
   }
 
   @override
@@ -30,7 +31,8 @@ class _MainTasksPageState extends State<MainTasksPage> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
       Provider.of<TodoProvider>(context, listen: false).fetchTodos();
     }
   }
@@ -50,26 +52,27 @@ class _MainTasksPageState extends State<MainTasksPage> {
         children: [
           getCustomWidget1(),
           getCustomWidget2(
-              todoProvider.todoList.length,
-              todoProvider.todoList
-                  .where((task) => task.completed ?? false)
+              todoProvider.todos.length,
+              todoProvider.todos
+                  .where((task) => task.isCompleted)
                   .length),
           Expanded(
             child: ListView.builder(
               controller: _scrollController,
-              itemCount: todoProvider.todoList.length + (todoProvider.isLoading ? 1 : 0),
+              itemCount:
+              todoProvider.todos.length,
               itemBuilder: (context, index) {
-                if (index == todoProvider.todoList.length) {
+                if (index == todoProvider.todos.length) {
                   return const Center(child: CircularProgressIndicator());
                 }
-                final todoTask = todoProvider.todoList[index];
+                final todoTask = todoProvider.todos[index];
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TodoCard(
-                    todoTask: todoTask,
                     onChange: () {
                       todoProvider.toggleTaskCompletion(todoTask);
                     },
+                    todo: todoTask,
                   ),
                 );
               },

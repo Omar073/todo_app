@@ -1,3 +1,5 @@
+import 'package:todo_app/View/LoginPage.dart';
+
 import '../View/HomePage.dart';
 import 'package:flutter/material.dart';
 
@@ -15,7 +17,7 @@ class _LandingPageState extends State<LandingPage> {
       body: GestureDetector(
         onTap: () {
           Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => HomePage()));
+              context, MaterialPageRoute(builder: (context) => LoginPage()));
         },
         child: Container(
           color: Colors.transparent,

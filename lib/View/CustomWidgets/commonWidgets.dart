@@ -69,7 +69,7 @@ Widget getCustomWidget2(int totalTasks, int completedTasks) {
         ),
         Builder(
           builder: (context) {
-            return filterButton(context, "Pending", TaskFilter.pending, totalTasks - completedTasks);
+            return filterButton(context, "Pending", TaskFilter.active, totalTasks - completedTasks);
           }
         ),
       ],

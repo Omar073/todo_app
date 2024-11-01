@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../Model/Providers/TodoProvider.dart';
-import '../Model/Classes/TodoTask.dart';
+import '../Model/Classes/Todo.dart';
 import '../Model/apiMethods.dart';
 import 'LastActivityPage.dart';
 import 'MainTasksPage.dart';
@@ -17,30 +17,15 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<TodoTask> todoList = [];
   double _width = 0;
   int _selectedIndex = 0;
   late List<Widget> _pages = [];
-  bool fetched = false;
 
   @override
   void initState() {
     super.initState();
     Provider.of<TodoProvider>(context, listen: false).fetchTodos();
     // _initializeTodos();
-  }
-
-  Future<void> _initializeTodos() async {
-    try {
-      final todos = await fetchToDos();
-      setState(() {
-        todoList = todos;
-        fetched = true;
-        _pages = [MainTasksPage(), MessagesPage(), LastActivityPage()];
-      });
-    } catch (e) {
-      debugPrint("Error fetching todos: $e");
-    }
   }
 
   void _onItemTapped(int index) {
@@ -72,7 +57,7 @@ class _HomePageState extends State<HomePage> {
             )
           : null,
       drawer: _width > 600 ? customDrawer() : null,
-      body: todoProvider.fetched
+      body: todoProvider.todos.isNotEmpty
           ? _pages[_selectedIndex]
           : const Center(child: CircularProgressIndicator()),
       bottomNavigationBar: _width < 600 ? bottomNavigationBar() : null,
