@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import '../Classes/TodoTask.dart';
-import '../apiMethods.dart';
 
 enum TaskFilter { all, completed, pending }
 
@@ -9,7 +8,6 @@ class TodoProvider with ChangeNotifier {
   List<TodoTask> _todoList = [];
   bool _fetched = false;
   TaskFilter _filter = TaskFilter.all;
-  int _totalTasks = 0;
   int _skip = 0;
   final int _limit = 30;
   bool _isLoading = false;
@@ -44,7 +42,6 @@ class TodoProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         Map<String, dynamic> json = response.data;
         List<dynamic> data = json['todos'];
-        _totalTasks = json['total'];
         _skip += _limit;
 
         List<TodoTask> newTodos = data.map((todo) => TodoTask.fromJson(todo)).toList();

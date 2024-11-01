@@ -66,10 +66,9 @@ class _MainTasksPageState extends State<MainTasksPage> {
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TodoCard(
-                    todoTask: todoTask,
                     onChange: () {
                       todoProvider.toggleTaskCompletion(todoTask);
-                    },
+                    }, todoTask: todoTask,
                   ),
                 );
               },

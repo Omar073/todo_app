@@ -1,10 +1,8 @@
-import '../Model/apiMethods.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../Model/Providers/TodoProvider.dart';
 import '../Model/Classes/TodoTask.dart';
-import '../Model/apiMethods.dart';
+import '../Model/Providers/TodoProvider.dart';
 import 'LastActivityPage.dart';
 import 'MainTasksPage.dart';
 import 'MessagesPage.dart';
@@ -30,18 +28,18 @@ class _HomePageState extends State<HomePage> {
     // _initializeTodos();
   }
 
-  Future<void> _initializeTodos() async {
-    try {
-      final todos = await fetchToDos();
-      setState(() {
-        todoList = todos;
-        fetched = true;
-        _pages = [MainTasksPage(), MessagesPage(), LastActivityPage()];
-      });
-    } catch (e) {
-      debugPrint("Error fetching todos: $e");
-    }
-  }
+  // Future<void> _initializeTodos() async {
+  //   try {
+  //     // final todos = await fetchToDos();
+  //     setState(() {
+  //       todoList = todos;
+  //       fetched = true;
+  //       _pages = [MainTasksPage(), MessagesPage(), LastActivityPage()];
+  //     });
+  //   } catch (e) {
+  //     debugPrint("Error fetching todos: $e");
+  //   }
+  // }
 
   void _onItemTapped(int index) {
     setState(() {
