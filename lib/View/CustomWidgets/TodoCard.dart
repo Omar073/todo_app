@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:todo_app/Model/Classes/TodoTask.dart';
+import 'package:todo_app/Model/Classes/Todo.dart';
 
 class TodoCard extends StatefulWidget {
-  const TodoCard({super.key, required this.onChange, required this.todoTask});
-  final TodoTask todoTask;
+  const TodoCard({super.key, required this.onChange, required this.todo});
+  final Todo todo;
   final void Function() onChange;
 
   @override
@@ -27,7 +27,7 @@ class _TodoCardState extends State<TodoCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.todoTask.todo ?? '',
+                  widget.todo.title ?? '',
                   style: const TextStyle(fontSize: 16),
                   softWrap: true,
                   overflow: TextOverflow.clip,
@@ -42,7 +42,7 @@ class _TodoCardState extends State<TodoCard> {
                 padding: const EdgeInsets.only(right: 8.0),
                 child: GestureDetector(
                   onTap: widget.onChange,
-                  child: widget.todoTask.completed ?? false
+                  child: widget.todo.isCompleted ?? false
                       ? const Icon(Icons.check_circle, size: 20)
                       : const Icon(Icons.check_circle_outline, size: 20),
                 ),
@@ -50,7 +50,7 @@ class _TodoCardState extends State<TodoCard> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  'Created by: u${widget.todoTask.userId}',
+                  'Created by: u${widget.todo.userId}',
                   style: const TextStyle(fontSize: 12),
                 ),
               ),
