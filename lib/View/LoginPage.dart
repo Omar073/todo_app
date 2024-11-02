@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../Model/Providers/TodoProvider.dart';
+import '../Model/Providers/UserProvider.dart';
 import 'HomePage.dart';
+import 'SignUpPage.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -21,6 +23,8 @@ class _LoginPageState extends State<LoginPage> {
         email: _emailController.text,
         password: _passwordController.text,
       );
+      // Set the current user in the UserProvider
+      Provider.of<UserProvider>(context, listen: false).setUser(userCredential.user);
       // Fetch todos after login
       final navigator = Navigator.of(context);
       await Provider.of<TodoProvider>(context, listen: false).fetchTodos();
@@ -59,7 +63,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             TextButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/signup');
+                Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpPage()));
               },
               child: const Text('Sign Up'),
             ),

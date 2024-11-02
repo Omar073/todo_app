@@ -16,6 +16,11 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void setUser(User? user) {
+    _user = user;
+    notifyListeners();
+  }
+
   Future<void> signOut() async {
     await _auth.signOut();
   }

@@ -1,5 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../Model/Providers/TodoProvider.dart';
+import '../Model/Providers/UserProvider.dart';
+import 'HomePage.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -20,8 +25,19 @@ class _SignUpPageState extends State<SignUpPage> {
         password: _passwordController.text,
       );
       // Handle successful sign-up
+      debugPrint('Sign up successful');
+      // Set the current user in the UserProvider
+      Provider.of<UserProvider>(context, listen: false).setUser(userCredential.user);
+      // Fetch todos for the new user
+      await Provider.of<TodoProvider>(context, listen: false).fetchTodos();
+      // Navigate to HomePage
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
     } on FirebaseAuthException catch (e) {
       // Handle sign-up error
+      debugPrint("failed to sign up");
       debugPrint(e.message);
     }
   }

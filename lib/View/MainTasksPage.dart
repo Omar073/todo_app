@@ -20,8 +20,9 @@ class _MainTasksPageState extends State<MainTasksPage> {
     super.initState();
     _scrollController = ScrollController();
     _scrollController.addListener(_onScroll);
-    Future.microtask(
-        () => Provider.of<TodoProvider>(context, listen: false).fetchTodos());
+    // Fetch todos only once during initialization
+    Future.microtask(() =>
+        Provider.of<TodoProvider>(context, listen: false).fetchTodos());
   }
 
   @override
@@ -52,29 +53,34 @@ class _MainTasksPageState extends State<MainTasksPage> {
         children: [
           getCustomWidget1(),
           getCustomWidget2(
-              todoProvider.todos.length,
-              todoProvider.todos
-                  .where((task) => task.isCompleted)
-                  .length),
+            todoProvider.todos.length,
+            todoProvider.todos.where((task) => task.isCompleted).length,
+          ),
           Expanded(
-            child: ListView.builder(
-              controller: _scrollController,
-              itemCount:
-              todoProvider.todos.length,
-              itemBuilder: (context, index) {
-                if (index == todoProvider.todos.length) {
+            child: Consumer<TodoProvider>(
+              builder: (context, todoProvider, child) {
+                if (todoProvider.isLoading) {
                   return const Center(child: CircularProgressIndicator());
-                }
-                final todoTask = todoProvider.todos[index];
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TodoCard(
-                    onChange: () {
-                      todoProvider.toggleTaskCompletion(todoTask);
+                } else if (todoProvider.todos.isEmpty) {
+                  return const Center(child: Text('No tasks available.'));
+                } else {
+                  return ListView.builder(
+                    controller: _scrollController,
+                    itemCount: todoProvider.todos.length,
+                    itemBuilder: (context, index) {
+                      final todoTask = todoProvider.todos[index];
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TodoCard(
+                          onChange: () {
+                            todoProvider.toggleTaskCompletion(todoTask);
+                          },
+                          todo: todoTask,
+                        ),
+                      );
                     },
-                    todo: todoTask,
-                  ),
-                );
+                  );
+                }
               },
             ),
           ),
@@ -84,6 +90,6 @@ class _MainTasksPageState extends State<MainTasksPage> {
   }
 
   Widget horizontalView() {
-    return Column();
+    return const Column();
   }
 }
