@@ -18,18 +18,22 @@ class TodoProvider with ChangeNotifier {
   Future<void> fetchTodos() async {
     _isLoading = true;
     notifyListeners();
+    debugPrint('\n\n\nFetching todos');
 
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
+        debugPrint('\n\nUser id: ${user.uid}\n\n');
         final querySnapshot = await _firestore
-            .collection('todos')
+            .collection('Todos')
             .where('userId', isEqualTo: user.uid)
             .get();
 
-        _todos = querySnapshot.docs
-            .map((doc) => Todo.fromFirestore(doc))
-            .toList();
+        _todos =
+            querySnapshot.docs.map((doc) => Todo.fromFirestore(doc)).toList();
+        for (var todo in _todos) {
+          debugPrint(todo.toString());
+        }
       }
     } catch (e) {
       debugPrint('Error fetching todos: $e');
@@ -42,19 +46,25 @@ class TodoProvider with ChangeNotifier {
   void addTodo(Todo todo) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      final docRef = await _firestore.collection('todos').add({
-        'title': todo.title,
-        'isCompleted': todo.isCompleted,
-        'userId': user.uid,
-      });
-      todo.id = docRef.id;
-      _todos.add(todo);
-      notifyListeners();
+      debugPrint('Adding task: ${todo.title}');
+      try {
+        final docRef = await _firestore.collection('Todos').add({
+          'title': todo.title,
+          'isCompleted': todo.isCompleted,
+          'userId': user.uid,
+        });
+        todo.id = docRef.id;
+        _todos.add(todo);
+        debugPrint('Task added with ID: ${todo.id}');
+        notifyListeners();
+      } catch (e) {
+        debugPrint('Error adding task: $e');
+      }
     }
   }
 
   void updateTodo(Todo todo) async {
-    await _firestore.collection('todos').doc(todo.id).update({
+    await _firestore.collection('Todos').doc(todo.id).update({
       'title': todo.title,
       'isCompleted': todo.isCompleted,
     });
@@ -73,5 +83,15 @@ class TodoProvider with ChangeNotifier {
   void setFilter(TaskFilter filter) {
     _filter = filter;
     notifyListeners();
+  }
+
+  // fetch single todo
+  Future<Todo> fetchSingleTodo(String id) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final doc = await _firestore.collection('Todos').doc(id).get();
+      return Todo.fromFirestore(doc);
+    }
+    return Todo(id: '', title: '', isCompleted: false, userId: '');
   }
 }

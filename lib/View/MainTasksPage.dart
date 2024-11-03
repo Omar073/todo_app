@@ -14,6 +14,7 @@ class MainTasksPage extends StatefulWidget {
 class _MainTasksPageState extends State<MainTasksPage> {
   double _width = 0;
   late ScrollController _scrollController;
+  late Future<void> _fetchTodosFuture;
 
   @override
   void initState() {
@@ -21,8 +22,9 @@ class _MainTasksPageState extends State<MainTasksPage> {
     _scrollController = ScrollController();
     _scrollController.addListener(_onScroll);
     // Fetch todos only once during initialization
-    Future.microtask(() =>
-        Provider.of<TodoProvider>(context, listen: false).fetchTodos());
+    // Future.microtask(() =>
+    //     Provider.of<TodoProvider>(context, listen: false).fetchTodos());
+    _fetchTodosFuture = Provider.of<TodoProvider>(context, listen: false).fetchTodos();
   }
 
   @override
@@ -57,10 +59,13 @@ class _MainTasksPageState extends State<MainTasksPage> {
             todoProvider.todos.where((task) => task.isCompleted).length,
           ),
           Expanded(
-            child: Consumer<TodoProvider>(
-              builder: (context, todoProvider, child) {
-                if (todoProvider.isLoading) {
+            child: FutureBuilder(
+              future: _fetchTodosFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return const Center(child: Text('Error loading tasks.'));
                 } else if (todoProvider.todos.isEmpty) {
                   return const Center(child: Text('No tasks available.'));
                 } else {

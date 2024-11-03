@@ -1,10 +1,7 @@
-import '../Model/apiMethods.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../Model/Providers/TodoProvider.dart';
-import '../Model/Classes/Todo.dart';
-import '../Model/apiMethods.dart';
 import 'LastActivityPage.dart';
 import 'MainTasksPage.dart';
 import 'MessagesPage.dart';
@@ -24,7 +21,10 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    Provider.of<TodoProvider>(context, listen: false).fetchTodos();
+    // Provider.of<TodoProvider>(context, listen: false).fetchTodos();
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   Provider.of<TodoProvider>(context, listen: false).fetchTodos();
+    // });
     // _initializeTodos();
   }
 
@@ -57,7 +57,7 @@ class _HomePageState extends State<HomePage> {
             )
           : null,
       drawer: _width > 600 ? customDrawer() : null,
-      body: todoProvider.todos.isNotEmpty
+      body: !todoProvider.isLoading
           ? _pages[_selectedIndex]
           : const Center(child: CircularProgressIndicator()),
       bottomNavigationBar: _width < 600 ? bottomNavigationBar() : null,

@@ -26,7 +26,7 @@ class _MessagesPageState extends State<MessagesPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text('User Email: ${user.email}'),
-            // Add more user info here if needed
+            Text('User ID: ${user.userName}'),
           ],
         ),
       ),
