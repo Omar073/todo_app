@@ -94,6 +94,7 @@ Here's a demonstration of the main features of each branch:
 In this branch, you can see how the app fetches tasks incrementally from an API source as you scroll, supporting lazy loading and pagination.
 
 [![API Handling Demo]]
+
 https://github.com/user-attachments/assets/b5c1e727-06dc-43ae-b8a7-f8ac28a621f5
 
 
@@ -101,6 +102,7 @@ https://github.com/user-attachments/assets/b5c1e727-06dc-43ae-b8a7-f8ac28a621f5
 This walkthrough showcases the Firebase integration, where each user has a personal task list, and all data is securely stored and retrieved from Firebase.
 
 [![Firebase Integration Demo]]
+
 https://github.com/user-attachments/assets/20e15fb9-a91e-42fe-8dac-88797b02d1d9
    - Copy the video IDs (found in the URL as `youtube.com/watch?v=VIDEO_ID`).
 
