@@ -104,10 +104,3 @@ This walkthrough showcases the Firebase integration, where each user has a perso
 [Firebase Integration Demo]
 
 https://github.com/user-attachments/assets/20e15fb9-a91e-42fe-8dac-88797b02d1d9
-   - Copy the video IDs (found in the URL as `youtube.com/watch?v=VIDEO_ID`).
-
-3. **Embed in README**:
-   - Replace `YOUR_VIDEO_ID_API` and `YOUR_VIDEO_ID_FIREBASE` in the links with the video IDs from your YouTube videos.
-   - These links create clickable images that link directly to YouTube.
-
-Let me know if you need further customization!
