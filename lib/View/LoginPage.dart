@@ -1,9 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../Model/Classes/User.dart' as myUser;
 import '../Model/Providers/TodoProvider.dart';
+import '../Model/Providers/UserProvider.dart';
 import 'HomePage.dart';
+import 'SignUpPage.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -21,10 +25,22 @@ class _LoginPageState extends State<LoginPage> {
         email: _emailController.text,
         password: _passwordController.text,
       );
+      // Set the current user in the UserProvider
+      final doc = await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(userCredential.user?.uid)
+          .get();
+      myUser.User u1 = myUser.User.fromFirestore(doc);
+      Provider.of<UserProvider>(context, listen: false).setUser(u1);
+
       // Fetch todos after login
-      final navigator = Navigator.of(context);
-      await Provider.of<TodoProvider>(context, listen: false).fetchTodos();
-      navigator.pushReplacement(
+      // await Provider.of<TodoProvider>(context, listen: false).fetchTodos();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Provider.of<TodoProvider>(context, listen: false).fetchTodos();
+      });
+
+      Navigator.pushReplacement(
+        context,
         MaterialPageRoute(builder: (context) => HomePage()),
       );
     } on FirebaseAuthException catch (e) {
@@ -59,7 +75,8 @@ class _LoginPageState extends State<LoginPage> {
             ),
             TextButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/signup');
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => SignUpPage()));
               },
               child: const Text('Sign Up'),
             ),

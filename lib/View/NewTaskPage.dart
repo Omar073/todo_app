@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../Model/Providers/TodoProvider.dart';
@@ -12,6 +13,8 @@ class NewTaskPage extends StatefulWidget {
 
 class _NewTaskPageState extends State<NewTaskPage> {
   final TextEditingController _titleController = TextEditingController();
+  //fetch current user id
+  final String userId = FirebaseAuth.instance.currentUser!.uid;
 
   void _addTask() {
     if (_titleController.text.isNotEmpty) {
@@ -19,10 +22,14 @@ class _NewTaskPageState extends State<NewTaskPage> {
         id: '', // Firestore will generate the ID
         title: _titleController.text,
         isCompleted: false,
-        userId: 13,
+        userId: userId,
       );
+      debugPrint('Adding new task: ${newTodo.title}');
       Provider.of<TodoProvider>(context, listen: false).addTodo(newTodo);
       Navigator.pop(context);
+    }
+    else {
+      debugPrint('Task title cannot be empty');
     }
   }
 

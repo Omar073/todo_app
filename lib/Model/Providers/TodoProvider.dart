@@ -1,67 +1,97 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
-import '../Classes/Todo.dart';
 import '../Classes/Todo.dart';
 
 enum TaskFilter { all, active, completed }
 
 class TodoProvider with ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  TaskFilter _filter = TaskFilter.all;
   List<Todo> _todos = [];
+  bool _isLoading = false;
+  TaskFilter _filter = TaskFilter.all;
 
   List<Todo> get todos => _todos;
-  // bool get isLoading => _isLoading;
-  TaskFilter get filter => TaskFilter.all;
+  bool get isLoading => _isLoading;
+  TaskFilter get filter => _filter;
 
   Future<void> fetchTodos() async {
-    final user = _auth.currentUser;
-    if (user != null) {
-      final snapshot = await _firestore
-          .collection('todos')
-          .where('userId', isEqualTo: user.uid)
-          .get();
-      _todos = snapshot.docs.map((doc) => Todo.fromFirestore(doc)).toList();
+    _isLoading = true;
+    notifyListeners();
+    debugPrint('\n\n\nFetching todos');
+
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        debugPrint('\n\nUser id: ${user.uid}\n\n');
+        final querySnapshot = await _firestore
+            .collection('Todos')
+            .where('userId', isEqualTo: user.uid)
+            .get();
+
+        _todos =
+            querySnapshot.docs.map((doc) => Todo.fromFirestore(doc)).toList();
+        for (var todo in _todos) {
+          debugPrint(todo.toString());
+        }
+      }
+    } catch (e) {
+      debugPrint('Error fetching todos: $e');
+    } finally {
+      _isLoading = false;
       notifyListeners();
     }
   }
 
-  Future<void> addTodo(Todo todo) async {
-    final user = _auth.currentUser;
+  void addTodo(Todo todo) async {
+    final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      await _firestore.collection('todos').add({
-        'userId': user.uid,
-        'title': todo.title,
-        'isCompleted': todo.isCompleted,
-      });
-      fetchTodos();
+      debugPrint('Adding task: ${todo.title}');
+      try {
+        final docRef = await _firestore.collection('Todos').add({
+          'title': todo.title,
+          'isCompleted': todo.isCompleted,
+          'userId': user.uid,
+        });
+        todo.id = docRef.id;
+        _todos.add(todo);
+        debugPrint('Task added with ID: ${todo.id}');
+        notifyListeners();
+      } catch (e) {
+        debugPrint('Error adding task: $e');
+      }
     }
   }
 
-  Future<void> updateTodo(Todo todo) async {
-    await _firestore.collection('todos').doc(todo.id).update({
+  void updateTodo(Todo todo) async {
+    await _firestore.collection('Todos').doc(todo.id).update({
       'title': todo.title,
       'isCompleted': todo.isCompleted,
     });
-    fetchTodos();
-  }
-
-  Future<void> deleteTodo(String id) async {
-    await _firestore.collection('todos').doc(id).delete();
-    fetchTodos();
+    final index = _todos.indexWhere((t) => t.id == todo.id);
+    if (index != -1) {
+      _todos[index] = todo;
+      notifyListeners();
+    }
   }
 
   void toggleTaskCompletion(Todo todoTask) {
     todoTask.isCompleted = !todoTask.isCompleted;
     updateTodo(todoTask);
-    notifyListeners();
   }
 
   void setFilter(TaskFilter filter) {
     _filter = filter;
     notifyListeners();
+  }
+
+  // fetch single todo
+  Future<Todo> fetchSingleTodo(String id) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final doc = await _firestore.collection('Todos').doc(id).get();
+      return Todo.fromFirestore(doc);
+    }
+    return Todo(id: '', title: '', isCompleted: false, userId: '');
   }
 }
